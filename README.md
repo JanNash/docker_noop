@@ -24,10 +24,12 @@ In conclusion, the workaround does not really create any overhead for your docke
 
 If anyone wants to elaborate on anchors and references in .yml, feel free to send me a PR with an extended version of this README. Personally, I think, it's fairly simple, so I will let this sample docker-compose configuration speak for itself:
 
-TODO: Add examples for simple string anchors
-
 ```
 version: '3'
+
+
+volumes:
+  quak:
 
 
 services:
@@ -44,21 +46,31 @@ services:
       BAR_CONTAINER: bar
     environment: &bar_env
       BAR_CONTAINER_BOING: boing
+    environment:
+      - &oink ./oink:/usr/share/oink
+      - &quak quak:/usr/share/quak
 
   foo: 
     container_name: foo
     image: debian:jessie-slim
+    volumes:
+      - *oink
     environment: 
       <<: *foo_env
 
   bar: 
     container_name: bar
     image: debian:jessie-slim
+    volumes: 
+      - *quak
     environment:
       <<: *bar_env
 
   klonk:
     image: debian:jessie-slim
+    volumes:
+      - *oink
+      - *quak
     environment:
       <<: *foo
       <<: *bar
